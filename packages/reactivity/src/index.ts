@@ -1,5 +1,6 @@
-const reactivity = {}
+import { shared } from "@vue/shared";
 
-export {
-  reactivity
-}
+const reactivity = {};
+
+
+export { reactivity };
