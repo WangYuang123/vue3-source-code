@@ -14,7 +14,7 @@ const targets = fs.readdirSync("packages").filter((f) => {
 // 对我们的目标依次打包，并行打包
 
 async function build(target) {
-  await execa("rollup", ["-c", "--environment", `TARGET:${target}`], { stdio: "inherit" });
+  await execa("rollup", ["-c", "--environment", `TARGET:${target}`, "--bundleConfigAsCjs"], { stdio: "inherit" });
 }
 
 function runParallel(targets, iteratorFn) {
