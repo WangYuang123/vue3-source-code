@@ -1,6 +1,8 @@
-import { shared } from "@vue/shared";
+// 导出方法，不实现功能
 
-const reactivity = {};
-
-
-export { reactivity };
+export {
+  reactive,
+  shallowReactive,
+  readonly,
+  shallowReadonly
+} from './reactivity'
