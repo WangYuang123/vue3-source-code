@@ -1,9 +1,5 @@
 import { isObject } from "@vue/shared";
-
-const mutableHandlers = {};
-const shallowReactiveHandlers = {};
-const readonlyHandlers = {};
-const shallowReadonlyHandlers = {};
+import { mutableHandlers, shallowReactiveHandlers, readonlyHandlers, shallowReadonlyHandlers } from "./baseHandlers";
 
 export function reactive(target) {
   return createReactiveObj(target, false, mutableHandlers);
@@ -35,7 +31,7 @@ export function createReactiveObj(target, isReadonly, baseHandlers) {
 
   const proxyMap = isReadonly ? readonlyMap : reactiveMap;
 
-  // 如果被代理，就不用再次被代理 
+  // 如果被代理，就不用再次被代理
   const existingProxy = proxyMap.get(target);
   if (existingProxy) return existingProxy;
 
