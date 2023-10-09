@@ -1,5 +1,6 @@
 import { extend, isObject } from "@vue/shared";
 import { readonly, reactive } from "./reactivity";
+import { track } from "./effect";
 // 实现new Proxy(target, handler)
 /**
  * 是不是仅读的，仅读的属性set时会报异常
@@ -17,6 +18,8 @@ function createGetter(isReadonly = false, isShallow = false) {
 
     if (!isReadonly) {
       // 收集依赖，数据变化更新视图
+      console.log('执行effect方法时会取值，收集对应的依赖')
+      track()
     }
 
     if (isShallow) {
