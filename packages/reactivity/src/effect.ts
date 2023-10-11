@@ -15,7 +15,8 @@ let activeEffect; // 存储当前的effect
 const effectStack = []; // 保证当前的effect是正确的
 function createReactiveEffect(fn, options) {
   const effect = function reactiveEffect() {
-    if (!effectStack.includes(activeEffect)) { // 保证effect没有加入到stack中
+    if (!effectStack.includes(activeEffect)) {
+      // 保证effect没有加入到stack中
       try {
         effectStack.push(effect);
         activeEffect = effect;
@@ -35,11 +36,39 @@ function createReactiveEffect(fn, options) {
   return effect;
 }
 
+const targetWeakMap = new WeakMap();
 // 让对象中的属性和当前对应的 effect关联起来
 export function track(target, type, key) {
-  // 可以拿到当前的effect
-  activeEffect;
+  // activeEffect 可以拿到当前的effect
+
+  if (activeEffect === undefined) {
+    // 此属性不用收集依赖，因为不在effect中使用
+    return;
+  }
+
+  // 处理target
+  let depsMap = targetWeakMap.get(target);
+  if (!depsMap) {
+    targetWeakMap.set(target, (depsMap = new Map()));
+  }
+
+  // 处理key
+  let dep = depsMap.get(key);
+  if (!dep) {
+    depsMap.set(key, (dep = new Set()));
+  }
+
+  if (!dep.has(activeEffect)) {
+    dep.add(activeEffect);
+  }
+
+  console.log(targetWeakMap)
 }
+
+/**
+ * {name: 'yanQi', age: 37} => name => [effect effect]
+ * weakMap key => {name: 'yanQi', age: 37} value(map) => {name => set}
+ */
 
 /**
  * effect(() => {
