@@ -61,8 +61,10 @@ export function track(target, type, key) {
   if (!dep.has(activeEffect)) {
     dep.add(activeEffect);
   }
+}
 
-  console.log(targetWeakMap)
+export function trigger(target, type, key?, newValue?, oldValue?) {
+  console.log(target, type, key, newValue, oldValue)
 }
 
 /**
