@@ -35,7 +35,7 @@ export function createReactiveObj(target, isReadonly, baseHandlers) {
   const existingProxy = proxyMap.get(target);
   if (existingProxy) return existingProxy;
 
-  const proxy = new Proxy(target, baseHandlers);
+  const proxy = new Proxy(target, baseHandlers); // TODO:
   proxyMap.set(target, proxy);
 
   return proxy;

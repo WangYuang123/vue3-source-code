@@ -19,7 +19,7 @@ function createGetter(isReadonly = false, isShallow = false) {
 
     if (!isReadonly) {
       // 收集依赖，数据变化更新视图
-      console.log("执行effect方法时会取值，收集对应的依赖");
+      // console.log("执行effect方法时会取值，收集对应的依赖");
       track(target, TrackOperations.GET, key);
     }
 
@@ -43,9 +43,9 @@ function createGetter(isReadonly = false, isShallow = false) {
 function createSetter(shallow = false) {
   return function set(target, key, value, receiver) {
     const oldValue = target[key]; // 获取老值
-    const result = Reflect.set(target, key, value, receiver);
     // 区分新增还是 修改， vue2数组无法监控更改索引，无法监控数组的长度
     let hadKey = isArray(target) && isIntegerKey(key) ? Number(key) < target.length : hasOwn(target, key);
+    const result = Reflect.set(target, key, value, receiver);
     if (!hadKey) {
       // 新增
       trigger(target, TriggerOpTypes.ADD, key, value);

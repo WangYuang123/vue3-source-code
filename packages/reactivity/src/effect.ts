@@ -1,4 +1,5 @@
-import { isArray } from "@vue/shared";
+import { isArray, isIntegerKey } from "@vue/shared";
+import { TriggerOpTypes } from "./operations";
 
 export function effect(fn, options: any = {}) {
   // 需要让这个effect变成响应式的，做到数据变化重新执行
@@ -63,20 +64,22 @@ export function track(target, type, key) {
   if (!dep.has(activeEffect)) {
     dep.add(activeEffect);
   }
+
 }
 
+// 找属性对应的effect，执行
 export function trigger(target, type, key?, newValue?, oldValue?) {
   // 如果这个属性没有收集过effect，那就不需要做任何操作
   const depsMap = targetWeakMap.get(target);
   if (!depsMap) return;
 
   // 要将所有的 要执行的effect 全部存在一个新的集合中，最终一起执行
-  const effects = new Set();
+  const effects = new Set(); // 这里对effect去重了
   const add = (effectsToAdd) => {
-    if(effectsToAdd) {
-      effectsToAdd.forEach(effect => effects.add(effect))
+    if (effectsToAdd) {
+      effectsToAdd.forEach((effect) => effects.add(effect));
     }
-  }
+  };
 
   /**
    * 1.看修改的是不是数组的长度，因为改长度影响比较大
@@ -88,19 +91,31 @@ export function trigger(target, type, key?, newValue?, oldValue?) {
      * effect(() => {
      *  state.arr[2]
      * })
-     * 
+     *
      * state.arr.length = 1
+     * 
      */
     depsMap.forEach((dep, dKey) => {
-      if (dKey === 'length' || dKey > newValue) {
-        add(dep)
+      if (dKey === "length" || (isIntegerKey(dKey) && dKey > newValue)) { // TODO: isIntegerKey
+        add(dep);
       }
-    }); 
+    });
   } else {
-     
+    // 可能是对象
+    if (key !== undefined) {
+      // 这里肯定是修改
+      add(depsMap.get(key));
+    }
+    // 如果修改数组中的某一个索引
+    switch (type) { // 如果添加索引，触发长度更新
+      case TriggerOpTypes.ADD:
+        if (isArray(target) && isIntegerKey(key)) {
+          add(depsMap.get("length"));
+        }
+    }
   }
 
-  effects.forEach((effect: any) => effect())
+  effects.forEach((effect: any) => effect());
 }
 
 /**
@@ -124,3 +139,12 @@ export function trigger(target, type, key?, newValue?, oldValue?) {
  *  state.address // effect1 [1]
  * })
  */
+
+
+/**
+ * 总结：
+ * 如果长度更新了，看修改的长度是否小于索引，如果小于对应索引，要更新
+ * arr = [1, 2, 3] => arr.length = 1
+ * 如果是对象，收集过这个key，就触发这key对应的effect
+ */
+ 

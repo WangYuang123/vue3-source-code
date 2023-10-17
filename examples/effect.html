@@ -13,12 +13,18 @@
   <script>
     const { effect, reactive } = VueReactivity
     const state = reactive({ name: 'yanqi', age: '37', arr: [1, 2, 3] })
+  
     effect(() => {
-      app.innerHTML = `arr: ${state.arr.length}`
+      app.innerHTML = `name: ${state.name}` // 会取长度，所以会触发长度的effect
     })
 
     setTimeout(() => {
-      state.arr.length = 1
+      state.a = 'a'
+      // state.arr.length = 1
+      // state.arr[0] = 1
+      // state.name = 'taotao'
+      // state.arr[0] = 0
+      // state.arr.length = 2
     }, 1000)
   </script>
 </body>
