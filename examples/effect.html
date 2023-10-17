@@ -12,13 +12,13 @@
   <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
   <script>
     const { effect, reactive } = VueReactivity
-    const state = reactive({ name: 'yanqi', age: '37', arr: [1, 2] })
+    const state = reactive({ name: 'yanqi', age: '37', arr: [1, 2, 3] })
     effect(() => {
-      app.innerHTML = `name: ${state.name}, age: ${state.age}`
+      app.innerHTML = `arr: ${state.arr.length}`
     })
 
     setTimeout(() => {
-      state.arr[1] = 100
+      state.arr.length = 1
     }, 1000)
   </script>
 </body>

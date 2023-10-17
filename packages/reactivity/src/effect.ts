@@ -1,3 +1,5 @@
+import { isArray } from "@vue/shared";
+
 export function effect(fn, options: any = {}) {
   // 需要让这个effect变成响应式的，做到数据变化重新执行
 
@@ -64,7 +66,41 @@ export function track(target, type, key) {
 }
 
 export function trigger(target, type, key?, newValue?, oldValue?) {
-  console.log(target, type, key, newValue, oldValue)
+  // 如果这个属性没有收集过effect，那就不需要做任何操作
+  const depsMap = targetWeakMap.get(target);
+  if (!depsMap) return;
+
+  // 要将所有的 要执行的effect 全部存在一个新的集合中，最终一起执行
+  const effects = new Set();
+  const add = (effectsToAdd) => {
+    if(effectsToAdd) {
+      effectsToAdd.forEach(effect => effects.add(effect))
+    }
+  }
+
+  /**
+   * 1.看修改的是不是数组的长度，因为改长度影响比较大
+   */
+  if (key === "length" && isArray(target)) {
+    // 如果对应的长度，有依赖收集需要更新
+    // 如果更改的长度，小于收集的索引，那么这个索引也需要触发effect重新执行
+    /**
+     * effect(() => {
+     *  state.arr[2]
+     * })
+     * 
+     * state.arr.length = 1
+     */
+    depsMap.forEach((dep, dKey) => {
+      if (dKey === 'length' || dKey > newValue) {
+        add(dep)
+      }
+    }); 
+  } else {
+     
+  }
+
+  effects.forEach((effect: any) => effect())
 }
 
 /**
