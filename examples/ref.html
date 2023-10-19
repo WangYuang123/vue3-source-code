@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+  <script>
+    const { ref, effect } = VueReactivity
+    let name = ref('yanQi') // 将普通的类型，转换成一个对象，这个对象中有value属性，指向原来的值
+    effect(() => { // 默认执行 =》 收集effect
+      app.innerHTML = name.value // track
+    })
+    setTimeout(() => {
+      name.value = 'taoTao' // trigger
+    }, 1000)
+  </script>
+</body>
+
+</html>
