@@ -13,5 +13,6 @@ export {
 
 export {
   ref,
-  shallowRef 
+  shallowRef,
+  toRef
 } from './ref'

@@ -3,6 +3,8 @@ import { track, trigger } from "./effect";
 import { TrackOperations, TriggerOpTypes } from "./operations";
 import { reactive } from "./reactivity";
 
+// vue源码 基本都是高阶函数，做了类似的柯里化的功能
+
 export function ref(value) {
   // value是一个普通类型
   // 将普通类型变成一个对象， value可以是对象，但是一般情况下对象用reactive更合理
@@ -48,4 +50,26 @@ class RefImpl {
     trigger(this, TriggerOpTypes.SET, "value", newValue);
   }
 }
-// vue源码 基本都是高阶函数，做了类似的柯里化的功能
+
+class ObjectRefImpl {
+  public _v_isRef = true; // 产生的实例会被添加 _v_isRef 表示是一个ref属性
+  constructor(public target, public key) {}
+  get value() {
+    return this.target[this.key];
+  }
+  set value(newValue) {
+    this.target[this.key] = newValue;
+  }
+}
+
+/**
+ * const state = {name: 'yanQi'}
+ * const name = toRef(state, 'name')
+ * 将某一个key对应的值 转化为ref
+ * 对象本身是响应式的，代理就是响应式的
+ */
+
+// 可以把对象的值转换成ref类型， 相当于代理
+export function toRef(target, key) {
+  return new ObjectRefImpl(target, key);
+}
